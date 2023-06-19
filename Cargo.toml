@@ -23,3 +23,6 @@ overflow-checks = true
 lto = true
 opt-level = "z"
 #strip = true
+
+[patch.crates-io]
+filecoin-proofs-api = { git = "https://github.com/filecoin-project/rust-filecoin-proofs-api", branch = "sn-c2" }
