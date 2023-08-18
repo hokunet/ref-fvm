@@ -220,7 +220,7 @@ where
             .charge_gas(self.call_manager.price_list().on_set_root())?;
 
         if !self.blocks.is_reachable(&new) {
-            return Err(syscall_error!(NotFound; "new root cid not reachable: {new}").into());
+            panic!("new root cid not reachable: {new}");
         }
 
         let mut state = self
@@ -285,7 +285,7 @@ where
         let start = GasTimer::start();
 
         if !self.blocks.is_reachable(cid) {
-            return Err(syscall_error!(NotFound; "block not reachable: {cid}").into());
+            panic!("not reachable")
         }
 
         let data = self
@@ -310,7 +310,7 @@ where
                 self.call_manager.price_list(),
                 self.call_manager.gas_tracker(),
             )
-            .or_fatal()?
+            .unwrap()
         } else {
             Vec::new()
         };
@@ -342,7 +342,8 @@ where
                 data,
                 self.call_manager.price_list(),
                 self.call_manager.gas_tracker(),
-            )?
+            )
+            .unwrap()
         } else {
             Vec::new()
         };

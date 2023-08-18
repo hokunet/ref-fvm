@@ -129,7 +129,7 @@ impl BlockRegistry {
 
         if check_reachable {
             if let Some(k) = block.links().iter().find(|k| !self.is_reachable(k)) {
-                return Err(syscall_error!(NotFound; "cannot put block: {k} not reachable").into());
+                panic!("cannot put block: {k} not reachable");
             }
         } else {
             // TODO: Charge for this. We already charge for parsing but... this can be triggered
