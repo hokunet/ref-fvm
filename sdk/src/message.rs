@@ -1,10 +1,12 @@
 // Copyright 2021-2023 Protocol Labs
 // SPDX-License-Identifier: Apache-2.0, MIT
+
 use fvm_ipld_encoding::ipld_block::IpldBlock;
 use fvm_shared::econ::TokenAmount;
 use fvm_shared::sys::out::vm::MessageContext;
 use fvm_shared::sys::BlockId;
 use fvm_shared::{ActorID, MethodNum};
+use num_traits::Zero;
 
 use crate::{sys, SyscallResult, NO_DATA_BLOCK_ID};
 
@@ -32,6 +34,13 @@ pub fn caller() -> ActorID {
 #[inline(always)]
 pub fn origin() -> ActorID {
     MESSAGE_CONTEXT.origin
+}
+
+/// Returns the ID address of the sponsor
+#[inline(always)]
+pub fn sponsor() -> Option<ActorID> {
+    let sponsor = MESSAGE_CONTEXT.sponsor;
+    (!sponsor.is_zero()).then_some(sponsor)
 }
 
 /// Returns the ID address of the actor.

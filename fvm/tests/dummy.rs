@@ -278,6 +278,7 @@ impl CallManager for DummyCallManager {
         &mut self,
         _from: fvm_shared::ActorID,
         _to: Address,
+        _sponsor: Option<ActorID>,
         _entrypoint: Entrypoint,
         _params: Option<kernel::Block>,
         _value: &fvm_shared::econ::TokenAmount,

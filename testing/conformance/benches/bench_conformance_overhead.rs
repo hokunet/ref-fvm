@@ -56,6 +56,7 @@ fn bench_500_simple_state_access(
                 version: 0,
                 from: Address::new_id(BURNT_FUNDS_ACTOR_ID),
                 to: Address::new_id(BURNT_FUNDS_ACTOR_ID),
+                sponsor: None,
                 sequence: i,
                 value: TokenAmount::zero(),
                 method_num: 2,
