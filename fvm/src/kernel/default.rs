@@ -42,6 +42,7 @@ pub struct DefaultKernel<C> {
     // preloaded into the block registry.
     pub caller: ActorID,
     pub actor_id: ActorID,
+    pub sponsor: Option<ActorID>,
     pub method: MethodNum,
     pub value_received: TokenAmount,
     pub read_only: bool,
@@ -77,6 +78,7 @@ where
         blocks: BlockRegistry,
         caller: ActorID,
         actor_id: ActorID,
+        sponsor: Option<ActorID>,
         method: MethodNum,
         value_received: TokenAmount,
         read_only: bool,
@@ -86,6 +88,7 @@ where
             blocks,
             caller,
             actor_id,
+            sponsor,
             method,
             value_received,
             read_only,
@@ -133,6 +136,7 @@ where
         flags: SendFlags,
     ) -> Result<CallResult> {
         let from = self.actor_id;
+        let sponsor = self.sponsor;
         let read_only = self.read_only || flags.read_only();
 
         if read_only && !value.is_zero() {
@@ -156,6 +160,7 @@ where
             cm.call_actor::<K>(
                 from,
                 *recipient,
+                sponsor,
                 Entrypoint::Invoke(method),
                 params,
                 value,
@@ -266,6 +271,7 @@ where
             let result = cm.call_actor::<K>(
                 self.caller,
                 Address::new_id(self.actor_id),
+                None,
                 Entrypoint::Upgrade(UpgradeInfo { old_code_cid: code }),
                 params,
                 &TokenAmount::from_whole(0),
@@ -545,6 +551,7 @@ where
         let ctx = MessageContext {
             caller: self.caller,
             origin: self.call_manager.origin(),
+            sponsor: self.sponsor.unwrap_or(0),
             receiver: self.actor_id,
             method_number: self.method,
             value_received: (&self.value_received)

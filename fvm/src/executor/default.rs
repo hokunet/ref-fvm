@@ -86,6 +86,15 @@ where
             .lookup_id(&msg.to)
             .context("failure when looking up message receiver")?;
 
+        // Pre-resolve the message sponsor's address, if known.
+        let sponsor_id = if let Some(sponsor) = msg.sponsor {
+            self.state_tree()
+                .lookup_id(&sponsor)
+                .context("failure when looking up message sponsor")?
+        } else {
+            None
+        };
+
         // Filecoin caps the premium plus the base-fee at the fee-cap.
         // We expose the _effective_ premium to the user.
         let effective_premium = msg
@@ -147,6 +156,7 @@ where
                 cm.call_actor::<K>(
                     sender_id,
                     msg.to,
+                    sponsor_id,
                     Entrypoint::Invoke(msg.method_num),
                     params,
                     &msg.value,

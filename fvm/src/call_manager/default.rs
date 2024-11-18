@@ -173,6 +173,7 @@ where
         &mut self,
         from: ActorID,
         to: Address,
+        sponsor: Option<ActorID>,
         entrypoint: Entrypoint,
         params: Option<Block>,
         value: &TokenAmount,
@@ -205,7 +206,7 @@ where
         }
 
         let mut result = self.with_stack_frame(|s| {
-            s.call_actor_unchecked::<K>(from, to, entrypoint, params, value, read_only)
+            s.call_actor_unchecked::<K>(from, to, sponsor, entrypoint, params, value, read_only)
         });
 
         // If we pushed a limit, pop it.
@@ -580,6 +581,7 @@ where
         self.call_actor_resolved::<K>(
             system_actor::SYSTEM_ACTOR_ID,
             id,
+            None,
             Entrypoint::ImplicitConstructor,
             Some(Block::new(CBOR, params, Vec::new())),
             &TokenAmount::zero(),
@@ -599,10 +601,12 @@ where
 
     /// Call actor without checking the call depth and/or dealing with transactions. This must _only_ be
     /// called from `call_actor`.
+    #[allow(clippy::too_many_arguments)]
     fn call_actor_unchecked<K>(
         &mut self,
         from: ActorID,
         to: Address,
+        sponsor: Option<ActorID>,
         entrypoint: Entrypoint,
         params: Option<Block>,
         value: &TokenAmount,
@@ -638,17 +642,20 @@ where
         };
 
         self.actor_call_stack.push((to, entrypoint.func_name()));
-        let res = self.call_actor_resolved::<K>(from, to, entrypoint, params, value, read_only);
+        let res =
+            self.call_actor_resolved::<K>(from, to, sponsor, entrypoint, params, value, read_only);
         self.actor_call_stack.pop();
 
         res
     }
 
     /// Call actor with resolved addresses.
+    #[allow(clippy::too_many_arguments)]
     fn call_actor_resolved<K>(
         &mut self,
         from: ActorID,
         to: ActorID,
+        sponsor: Option<ActorID>,
         entrypoint: Entrypoint,
         params: Option<Block>,
         value: &TokenAmount,
@@ -733,6 +740,7 @@ where
                 block_registry,
                 from,
                 to,
+                sponsor,
                 entrypoint.method_num(),
                 value.clone(),
                 read_only,
