@@ -56,6 +56,7 @@ pub trait Kernel: SyscallHandler<Self> + 'static {
         blocks: BlockRegistry,
         caller: ActorID,
         actor_id: ActorID,
+        sponsor: Option<ActorID>,
         method: MethodNum,
         value_received: TokenAmount,
         read_only: bool,

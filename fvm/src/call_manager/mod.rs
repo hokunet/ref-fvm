@@ -69,6 +69,7 @@ pub trait CallManager: 'static {
         &mut self,
         from: ActorID,
         to: Address,
+        sponsor: Option<ActorID>,
         entrypoint: Entrypoint,
         params: Option<kernel::Block>,
         value: &TokenAmount,
